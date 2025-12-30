@@ -11,3 +11,6 @@ https:
 # Virtual environments
 .venv
 uv.lock
+
+#Git
+.README.md
