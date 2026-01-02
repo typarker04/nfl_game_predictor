@@ -19,4 +19,16 @@ The goal is to generate data-driven predictions that change as the season progre
 This project utilizes the publicly available python package _nflreadpy_. Game data is transformed into team-centric features, allowing each upcoming 
 matchup to be represented as a comparison between two teams’ recent performance profiles.
 
+## Repository Structure
 
+├── data/ # Raw and/or processed game data
+
+├── notebooks/ # Exploratory analysis and prototyping
+
+├── src/ # Feature engineering and modeling code
+
+├── models/ # Saved models and artifacts
+
+├── results/ # Evaluation outputs and predictions
+
+└── README.md # Project documentation
