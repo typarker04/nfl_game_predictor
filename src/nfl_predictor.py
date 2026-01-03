@@ -2,45 +2,48 @@ import nflreadpy as nfl
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import mean_absolute_error, r2_score
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
+import pickle
+from datetime import datetime
 
-schedule = nfl.load_schedules([2021, 2022, 2023, 2024, 2025]).to_pandas() #Import schedules and game info for 2021-2025 seasons
-games = schedule[
-    (schedule['game_type']=='REG') & #include only regular season games
-    (schedule['home_score'].notna())&
-    (schedule['away_score'].notna())
-].copy()
 
-games['home_win'] = (games['home_score'] > games['away_score']).astype(int) #Home win variable
+model_path = 'models/finalized_model.pkl'
+loaded_model = pickle.load(open(model_path, 'rb'))
 
-team_stats = nfl.load_team_stats([2021, 2022, 2023, 2024, 2025]).to_pandas() #load team and game stats for 2021-2025 seasons
-team_stats['turnovers_offense'] = (team_stats['passing_interceptions']+ #rows correspond to single game stats
-                                 team_stats['sack_fumbles_lost']+
-                                 team_stats['rushing_fumbles_lost']+
-                                 team_stats['receiving_fumbles_lost']
-                                 )
-team_stats['turnovers_defense'] = (team_stats['def_interceptions']+
-                                 team_stats['def_fumbles'])
-team_stats['turnover_margin'] = (team_stats['turnovers_defense']-
-                               team_stats['turnovers_offense'])
-team_stats['completion_pct'] = (team_stats['completions']/team_stats['attempts'])
+#Create a dataframe with rows corresponding to the ewma stats for each team. Use this to index
+# individual teams to plug into model
+df = pd.read_csv('data/df_clean.csv')
+schedule = nfl.load_schedules(2025).to_pandas()
 
-independent_variables = ['completions',
-                       'passing_yards',
-                       'passing_tds',
-                       'rushing_yards',
-                       'sacks_suffered',
-                       'rushing_tds',
-                       'completion_pct',
-                       'turnovers_offense',
-                       'turnovers_defense',
-                       'turnover_margin',
-                       'def_tackles_for_loss',
-                       'penalty_yards',
-                       'fg_pct',
-                       'pat_pct',
-                       ]
+
+#loaded_model.predict(diff_df)
+
+def load_matchup_df(team, week = 17):
+    team_df = df[(df['season'] == 2025) & (df['week'] == week) & (df['team'] == team)]
+
+    if len(team_df) == 0:
+        print(f"No data available for {team} in week 17, 2025")
+    else:
+        opponent = team_df['opponent_team'].iloc[0]
+        print(f"\nComparing {team} vs {opponent}")
+        
+    opponent_df = df[(df['season'] == 2025) & (df['week'] == 17) & (df['team'] == opponent)]
+    if len(opponent_df) == 0:
+        print(f"No data available for {opponent} in week 17")
+    else:
+        numeric_cols = team_df.select_dtypes(include=['float']).columns.tolist()
+        diff_data = {}
+        diff_data['team'] = team
+        diff_data['opponent'] = opponent
+        diff_data['season'] = 2025
+        diff_data['week'] = 17
+
+        for col in numeric_cols:
+            team_val = team_df[col].iloc[0]
+            opp_val = opponent_df[col].iloc[0]
+            diff = team_val-opp_val
+            diff_data[f'diff_{col}'] = diff
+
+    diff_df = pd.DataFrame([diff_data])
+    print(diff_df)
+
+load_matchup_df('NE', 17)
