@@ -44,6 +44,7 @@ def load_matchup_df(team, week = 17):
             diff_data[f'diff_{col}'] = diff
 
     diff_df = pd.DataFrame([diff_data])
+    print("Showing game stat differences... \n")
     print(diff_df)
 
-load_matchup_df('NE', 17)
+load_matchup_df('ATL', 17)
