@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 from datetime import datetime
+schedule = nfl.load_schedules()
+current_season = nfl.get_current_season()
+current_week = nfl.get_current_week(False, kwargs=18)
+
+week_games = schedule[(schedule['week'] == current_week) & (schedule['season'] == current_season)]
 
 
 model_path = 'models/finalized_model.pkl'
@@ -11,7 +16,7 @@ loaded_model = pickle.load(open(model_path, 'rb'))
 
 #Create a dataframe with rows corresponding to the ewma stats for each team. Use this to index
 # individual teams to plug into model
-df = pd.read_csv('data/df_clean.csv')
+df = pd.read_csv('data/games_with_stats1.csv')
 schedule = nfl.load_schedules(2025).to_pandas()
 
 
@@ -48,3 +53,13 @@ def load_matchup_df(team, week = 17):
     print(diff_df)
 
 load_matchup_df('ATL', 17)
+
+def load_next_matchup(team, current_date=None):
+    if current_date is None:
+        current_date = datetime.now()
+        formatted_date = current_date.strftime("%Y-%m-%d")
+    elif isinstance(current_date, str):
+        current_date = pd.to_datetime(current_date)
+        formatted_date = current_date.strftime("%Y-%m-%d")
+    
+    df['game']
