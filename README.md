@@ -19,6 +19,10 @@ The goal is to generate data-driven predictions that change as the season progre
 This project utilizes the publicly available python package _nflreadpy_. Game data is transformed into team-centric features, allowing each upcoming 
 matchup to be represented as a comparison between two teams’ recent performance profiles.
 
+## How To Use
+
+This project gets updated weekly with the most recent NFL stats, ensuring the most up-to-date estimations. To see upcoming games, you can either run the nfl_predictor.py file, or inspect the csv file _upcoming_diffs.py_.
+
 ## Repository Structure
 
 ├── data/ # Raw and/or processed game data
@@ -32,3 +36,4 @@ matchup to be represented as a comparison between two teams’ recent performanc
 ├── results/ # Evaluation outputs and predictions
 
 └── README.md # Project documentation
+
