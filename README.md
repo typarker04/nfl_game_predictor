@@ -14,6 +14,11 @@ disparities and create an up to date game predictor based on many of these chang
 
 The goal is to generate data-driven predictions that change as the season progresses.
 
+### Random Forest
+- I used a RandomForest model to identify the 10 most important statistics. As seen in the graphic, completion percentage is the strongest predictor, with passing touchdowns the second most. I used the top 10 features to avoid overfitting, which I saw a decrease in when comparing using all features and the top 10.
+
+<img width="3122" height="1575" alt="feature_importance" src="https://github.com/user-attachments/assets/79e59704-c563-4157-895a-7cc2340b9b22" />
+
 ## Data
 
 This project utilizes the publicly available python package _nflreadpy_. Game data is transformed into team-centric features, allowing each upcoming 
@@ -22,6 +27,7 @@ matchup to be represented as a comparison between two teams’ recent performanc
 ## How To Use
 
 This project gets updated weekly with the most recent NFL stats, ensuring the most up-to-date estimations. To see upcoming games, you can either run the nfl_predictor.py file, or inspect the csv file _upcoming_diffs.py_.
+
 
 ## Repository Structure
 
@@ -36,4 +42,5 @@ This project gets updated weekly with the most recent NFL stats, ensuring the mo
 ├── results/ # Evaluation outputs and predictions
 
 └── README.md # Project documentation
+
 
