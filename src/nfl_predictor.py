@@ -73,7 +73,7 @@ def get_nfl_diffs():
     #9. Visualize results.
     plt.figure(figsize=(10, 6))
     plt.barh(range(len(final_df)), final_df['win_prob'])
-    plt.yticks(range(len(final_df)), final_df['game_id'])
+    plt.yticks(range(len(final_df)), final_df['game_id'].to_list())
     plt.xlabel("Home Win Prob")
     plt.ylabel("This week's games")
     plt.savefig('outputs/wild_card_probs', dpi=300, bbox_inches='tight')
