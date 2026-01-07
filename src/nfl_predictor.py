@@ -3,11 +3,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
+import joblib
 from datetime import datetime
 
 
 def get_nfl_diffs():
-    # 1. Load your cleaned stats
+    # 1. Load your cleaned stats and model
     most_recent_stats = pd.read_csv('data/most_recent_stats.csv')
     schedule = nfl.load_schedules(2025).to_pandas()
     current_season = nfl.get_current_season()
@@ -20,7 +21,7 @@ def get_nfl_diffs():
 
     # 3. Define the stats we want to compare (based on your columns)
     keep_cols = [
-        'team', 'completions_ewma',
+        'team', 
         'passing_yards_ewma',
         'passing_tds_ewma',
         'rushing_yards_ewma',
@@ -30,10 +31,7 @@ def get_nfl_diffs():
         'turnovers_offense_ewma',
         'turnovers_defense_ewma',
         'turnover_margin_ewma',
-        'def_tackles_for_loss_ewma',
-        'penalty_yards_ewma',
-        'fg_pct_ewma',
-        'pat_pct_ewma'
+        'def_tackles_for_loss_ewma'
     ]
 
     # 4. Merge Home Team Stats
@@ -63,12 +61,29 @@ def get_nfl_diffs():
     # 7. Final Cleanup: Keep only IDs and Diffs
     diff_cols = [c for c in df_matchups.columns if c.endswith('_diff')]
     final_df = df_matchups[['game_id', 'home_team', 'away_team'] + diff_cols]
+
+    #8. Run each game through the model.
+
+    model = joblib.load('models/finalized_model.pkl')
+
+    model_cols = [c for c in final_df.columns if c.endswith("_diff")]
+    final_df['win_prob'] = model.predict_proba(final_df[model_cols])[:, 1]
+    final_df = final_df.sort_values(by='win_prob', ascending=False)
+
+    #9. Visualize results.
+    plt.figure(figsize=(10, 6))
+    plt.barh(range(len(final_df)), final_df['win_prob'])
+    plt.yticks(range(len(final_df)), final_df['game_id'])
+    plt.xlabel("Home Win Prob")
+    plt.ylabel("This week's games")
+    plt.savefig('outputs/wild_card_probs', dpi=300, bbox_inches='tight')
+    plt.show()
     
     return final_df
 
 if __name__ == "__main__":
     result = get_nfl_diffs()
     print("--- Upcoming NFL Game Stat Differences ---")
-    print(result.to_string(index=False))
+    print(result)#.to_string(index=False))
     result.to_csv('data/upcoming_diffs.csv')
 
