@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 import joblib
 from datetime import datetime
+from sklearn.preprocessing import StandardScaler
 
 
 def get_nfl_diffs():
@@ -65,9 +66,12 @@ def get_nfl_diffs():
     #8. Run each game through the model.
 
     model = joblib.load('models/finalized_model.pkl')
+    scaler = joblib.load('models/scaler.pkl')
 
     model_cols = [c for c in final_df.columns if c.endswith("_diff")]
-    final_df['win_prob'] = model.predict_proba(final_df[model_cols])[:, 1]
+    X_scaled = scaler.transform(final_df[model_cols])
+
+    final_df['win_prob'] = model.predict_proba(X_scaled)[:,1]
     final_df = final_df.sort_values(by='win_prob', ascending=False)
 
     #9. Visualize results.
@@ -79,7 +83,7 @@ def get_nfl_diffs():
     plt.savefig('outputs/wild_card_probs', dpi=300, bbox_inches='tight')
     plt.show()
     
-    return final_df
+    return model_cols
 
 if __name__ == "__main__":
     result = get_nfl_diffs()
