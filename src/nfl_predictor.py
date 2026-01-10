@@ -21,7 +21,7 @@ def get_nfl_diffs():
                           (schedule['season'] == current_season)].copy()
 
     # 3. Define the stats we want to compare (based on your columns)
-    keep_cols = [
+    keep_cols_old = [
         'team', 
         'passing_yards_ewma',
         'passing_tds_ewma',
@@ -34,6 +34,18 @@ def get_nfl_diffs():
         'turnover_margin_ewma',
         'def_tackles_for_loss_ewma'
     ]
+    keep_cols = [
+        'team',
+        'completion_pct_ewma',
+        'passing_tds_ewma',
+        'rushing_tds_ewma',
+        'turnover_margin_ewma',
+        'turnovers_offense_ewma',
+        'rushing_yards_ewma',
+        'sacks_suffered_ewma',
+        'turnovers_defense_ewma',
+        'passing_yards_ewma',
+        'def_tackles_for_loss_ewma']
 
     # 4. Merge Home Team Stats
     df_matchups = pd.merge(
@@ -83,7 +95,7 @@ def get_nfl_diffs():
     plt.savefig('outputs/wild_card_probs', dpi=300, bbox_inches='tight')
     plt.show()
     
-    return model_cols
+    return final_df
 
 if __name__ == "__main__":
     result = get_nfl_diffs()
