@@ -73,7 +73,7 @@ def get_nfl_diffs():
 
     # 7. Final Cleanup: Keep only IDs and Diffs
     diff_cols = [c for c in df_matchups.columns if c.endswith('_diff')]
-    final_df = df_matchups[['game_id', 'home_team', 'away_team'] + diff_cols]
+    final_df = df_matchups[['game_id', 'home_team', 'away_team'] + diff_cols].copy()
 
     #8. Run each game through the model.
 
