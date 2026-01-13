@@ -78,3 +78,11 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, width='stretch')
+
+csv = predictions_df.to_csv(index=False)
+st.download_button(
+    label="Download predictions as CSV",
+    data=csv,
+    file_name=f"nfl_predictions_{datetime.now().strftime('%Y%m%d')}.csv",
+    mime="text/csv"
+)

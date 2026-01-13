@@ -7,6 +7,8 @@ import joblib
 from datetime import datetime
 from sklearn.preprocessing import StandardScaler
 
+
+
 def get_nfl_diffs():
     # 1. Load your cleaned stats and model
     most_recent_stats = pd.read_csv('data/most_recent_stats.csv')
