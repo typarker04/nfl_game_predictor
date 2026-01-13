@@ -1,46 +1,218 @@
-# NFL Game Prediction Project
+# NFL Game Predictor
 
-This repository contains a data science / machine learning project focused on predicting outcomes of upcoming NFL games using historical game data. 
-The core idea is to engineer informative team-level features from past games, with a weighting scheme that emphasizes more recent performance.
+A machine learning application that predicts NFL game outcomes using historical performance data and exponentially weighted moving averages (EWMA).
 
-## Project Overview
+## Project Structure
 
-NFL teams change significantly over the course of a season due to imjuries, roster changes, coaching decisions, and form. This project aims to capture those
-disparities and create an up to date game predictor based on many of these changes. This project achieves this by: 
-- Aggregating historical NFL data at the team level
-- Engineer features based on performance (offense, defense, efficiency, etc)
-- Applies recency weighted averaging to more accurately capture changes throughout a season
-- Use these features to train a logistic regression model to predict upcoming games
+```
+nfl-predictions/
+├── app.py                      # Streamlit web application
+├── train_model.py              # Model training script
+├── predict_games.py            # CLI prediction script
+├── requirements.txt            # Python dependencies
+├── README.md                   # This file
+│
+├── src/                        # Source code
+│   ├── __init__.py
+│   ├── data_processing.py      # Data loading and feature engineering
+│   ├── model_training.py       # Model training and evaluation
+│   └── predictions.py          # Prediction functions
+│
+├── data/                       # Data files
+│   ├── df_clean.csv            # Processed team statistics
+│   ├── games_with_stats.csv    # Games with merged statistics
+│   └── most_recent_stats.csv   # Latest team statistics
+│
+├── models/                     # Saved models
+│   ├── finalized_model.pkl     # Trained model
+│   ├── scaler.pkl              # Feature scaler
+│   └── feature_list.pkl        # Selected features
+│
+└── outputs/                    # Generated outputs
+    ├── feature_importance.png
+    ├── predictions.png
+    └── latest_predictions.csv
+```
 
-The goal is to generate data-driven predictions that change as the season progresses.
+## Features
 
-### Random Forest
-- I used a RandomForest model to identify the 10 most important statistics. As seen in the graphic, completion percentage is the strongest predictor, with passing touchdowns the second most. I used the top 10 features to avoid overfitting, which I saw a decrease in when comparing using all features and the top 10.
+### Model Features
+The model uses the following statistics (calculated as EWMA):
+- **Passing**: Completions, yards, touchdowns, completion percentage
+- **Rushing**: Yards, touchdowns
+- **Defense**: Tackles for loss, turnovers forced
+- **Turnovers**: Offensive turnovers, defensive takeaways, turnover margin
+- **Special Teams**: Field goal percentage, PAT percentage
+- **Other**: Sacks suffered, penalty yards
 
-<img width="3122" height="1575" alt="feature_importance" src="https://github.com/user-attachments/assets/79e59704-c563-4157-895a-7cc2340b9b22" />
+### Key Components
+1. **Feature Engineering**: Creates difference features (Home - Away) for each statistic
+2. **EWMA Calculation**: Uses exponentially weighted moving average (α=0.4) to emphasize recent performance
+3. **Feature Selection**: Random Forest identifies top 10 most important features
+4. **Prediction**: Logistic Regression trained on selected features
 
-## Data
+## Installation
 
-This project utilizes the publicly available python package _nflreadpy_. Game data is transformed into team-centric features, allowing each upcoming 
-matchup to be represented as a comparison between two teams’ recent performance profiles.
+### 1. Clone the repository
+```bash
+git clone <your-repo-url>
+cd nfl-predictions
+```
 
-## How To Use
+### 2. Create virtual environment
+```bash
+python3.13 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-This project gets updated weekly with the most recent NFL stats, ensuring the most up-to-date estimations. To see upcoming games, you can either run the nfl_predictor.py file, or inspect the csv file _upcoming_diffs.py_.
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
+## Usage
 
-## Repository Structure
+### 1. Train the Model
 
-├── data/ # Raw and/or processed game data
+First, train the model on historical data:
 
-├── notebooks/ # Exploratory analysis and prototyping
+```bash
+python train_model.py
+```
 
-├── src/ # Feature engineering and modeling code
+This will:
+- Load NFL data from 2021-2025 seasons
+- Calculate EWMA features
+- Train a logistic regression model
+- Save the model, scaler, and features to `models/`
+- Generate feature importance chart in `outputs/`
 
-├── models/ # Saved models and artifacts
+### 2. Make Predictions
 
-├── results/ # Evaluation outputs and predictions
+#### Option A: Web App (Recommended)
 
-└── README.md # Project documentation
+Run the Streamlit app:
 
+```bash
+streamlit run app.py
+```
 
+Features:
+- Interactive visualization of win probabilities
+- Confidence filtering
+- Detailed prediction table
+- CSV download
+
+#### Option B: Command Line
+
+Run predictions from the terminal:
+
+```bash
+python predict_games.py
+```
+
+This will:
+- Load the trained model
+- Get current week's games
+- Make predictions
+- Save results to `outputs/latest_predictions.csv`
+- Generate visualization chart
+
+## Model Performance
+
+Typical performance metrics:
+- **Training Accuracy**: ~80-82%
+- **Testing Accuracy**: ~80-82%
+
+The model achieves consistent performance across training and test sets, indicating good generalization.
+
+## Top Features (by importance)
+
+1. Completion Percentage Differential
+2. Passing TDs Differential
+3. Rushing TDs Differential
+4. Turnover Margin Differential
+5. Turnovers Offense Differential
+6. Rushing Yards Differential
+7. Sacks Suffered Differential
+8. Turnovers Defense Differential
+9. Passing Yards Differential
+10. Defensive Tackles for Loss Differential
+
+## Data Sources
+
+- **nflreadrpy**: Python library for accessing NFL play-by-play data
+- Seasons: 2021-2025 (regular season only)
+
+## Customization
+
+### Adjust EWMA Alpha
+
+In `src/data_processing.py`, modify the alpha parameter:
+
+```python
+x.ewm(alpha=0.4, adjust=False).mean()  # Change 0.4 to desired value
+```
+
+### Change Features
+
+In `train_model.py`, modify `INDEPENDENT_VARIABLES`:
+
+```python
+INDEPENDENT_VARIABLES = [
+    'your_feature_1',
+    'your_feature_2',
+    # ...
+]
+```
+
+### Adjust Model Parameters
+
+In `src/model_training.py`, modify the model initialization:
+
+```python
+model = LogisticRegression(
+    random_state=41,
+    max_iter=1000,
+    C=1.0,  # Add regularization parameter
+    # ...
+)
+```
+
+## Troubleshooting
+
+### "No module named 'nflreadrpy'"
+```bash
+pip install nfl-data-py
+```
+
+### "FileNotFoundError: models/finalized_model.pkl"
+Run `python train_model.py` first to train and save the model.
+
+### "No games found for current week"
+The model looks for unplayed games in the current NFL week. If all games are complete, it will show this message.
+
+### Scaler is a list error
+Make sure you're using the correct loading method in your code. The updated `model_training.py` saves/loads the scaler correctly.
+
+## Future Improvements
+
+- [ ] Add more features (weather, injuries, home field advantage)
+- [ ] Implement ensemble methods
+- [ ] Add historical accuracy tracking
+- [ ] Include betting line comparisons
+- [ ] Add player-level statistics
+
+## License
+
+MIT License
+
+## Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+## Contact
+
+Your Name - your.email@example.com
+
+Project Link: [https://github.com/yourusername/nfl-predictions](https://github.com/yourusername/nfl-predictions)
