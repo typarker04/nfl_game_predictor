@@ -7,16 +7,12 @@ A machine learning application that predicts NFL game outcomes using historical 
 ```
 nfl-predictions/
 ├── app.py                      # Streamlit web application
-├── train_model.py              # Model training script
-├── predict_games.py            # CLI prediction script
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # This file
 │
 ├── src/                        # Source code
 │   ├── __init__.py
-│   ├── data_processing.py      # Data loading and feature engineering
-│   ├── model_training.py       # Model training and evaluation
-│   └── predictions.py          # Prediction functions
+│   └── nfl_predictor.py          # Prediction functions
 │
 ├── data/                       # Data files
 │   ├── df_clean.csv            # Processed team statistics
@@ -29,9 +25,14 @@ nfl-predictions/
 │   └── feature_list.pkl        # Selected features
 │
 └── outputs/                    # Generated outputs
-    ├── feature_importance.png
-    ├── predictions.png
-    └── latest_predictions.csv
+|    ├── feature_importance.png
+|    ├── predictions.png
+|    └── latest_predictions.csv
+|
+└── notebooks/
+    ├── nfl_predictor_notebook.ipynb # Where I messed around with the models/data
+    └── nfl_predictor_organized.ipynb # Organized markdown notebook where model can get updates.
+                                      # Integrates with Streamlit app
 ```
 
 ## Features
@@ -55,7 +56,7 @@ The model uses the following statistics (calculated as EWMA):
 
 ### 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone <typarker04/nfl_game_predictor>
 cd nfl-predictions
 ```
 
@@ -77,7 +78,7 @@ pip install -r requirements.txt
 First, train the model on historical data:
 
 ```bash
-python train_model.py
+predictor_organized.ipynb
 ```
 
 This will:
@@ -105,11 +106,8 @@ Features:
 
 #### Option B: Command Line
 
-Run predictions from the terminal:
+Run predictions from the Notebook:
 
-```bash
-python predict_games.py
-```
 
 This will:
 - Load the trained model
@@ -148,7 +146,7 @@ The model achieves consistent performance across training and test sets, indicat
 
 ### Adjust EWMA Alpha
 
-In `src/data_processing.py`, modify the alpha parameter:
+In `notebooks/predictor_organized.ipynb - Train Final Model`
 
 ```python
 x.ewm(alpha=0.4, adjust=False).mean()  # Change 0.4 to desired value
@@ -156,10 +154,10 @@ x.ewm(alpha=0.4, adjust=False).mean()  # Change 0.4 to desired value
 
 ### Change Features
 
-In `train_model.py`, modify `INDEPENDENT_VARIABLES`:
+In `notebooks/predictor_organized.ipynb - EWMA Features`, modify `independent_variables`:
 
 ```python
-INDEPENDENT_VARIABLES = [
+independent_variables = [
     'your_feature_1',
     'your_feature_2',
     # ...
@@ -168,7 +166,7 @@ INDEPENDENT_VARIABLES = [
 
 ### Adjust Model Parameters
 
-In `src/model_training.py`, modify the model initialization:
+In `notebooks/predictor_organized.ipynb - Train Final Model`, modify the model initialization:
 
 ```python
 model = LogisticRegression(
@@ -181,9 +179,9 @@ model = LogisticRegression(
 
 ## Troubleshooting
 
-### "No module named 'nflreadrpy'"
+### "No module named 'nflreadpy'"
 ```bash
-pip install nfl-data-py
+pip install nflreadpy
 ```
 
 ### "FileNotFoundError: models/finalized_model.pkl"
@@ -213,7 +211,8 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## Contact
 
-Your Name - trparker@wisc.edu.com
+[Tyler Parker](trparker@wisc.edu.com)
 
 
 Project Link: [https://github.com/typarker04/nfl-predictions](https://github.com/typarker04/nfl-predictions)
+
