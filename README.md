@@ -213,6 +213,7 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## Contact
 
-Your Name - your.email@example.com
+Your Name - trparker@wisc.edu.com
 
-Project Link: [https://github.com/yourusername/nfl-predictions](https://github.com/yourusername/nfl-predictions)
+
+Project Link: [https://github.com/typarker04/nfl-predictions](https://github.com/typarker04/nfl-predictions)
