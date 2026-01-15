@@ -90,7 +90,7 @@ This will:
 
 ### 2. Make Predictions
 
-#### Option A: Web App (Recommended)
+#### Option A: Local Web App (Recommended)
 
 Run the Streamlit app:
 
@@ -104,7 +104,7 @@ Features:
 - Detailed prediction table
 - CSV download
 
-#### Option B: Command Line
+#### Option B: Interactive Notebook
 
 Run predictions from the Notebook:
 
@@ -215,4 +215,5 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 
 Project Link: [https://github.com/typarker04/nfl-predictions](https://github.com/typarker04/nfl-predictions)
+
 
