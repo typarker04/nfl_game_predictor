@@ -1,0 +1,15 @@
+feature,importance
+completion_pct_ewma_diff,0.16230460519663836
+rushing_tds_ewma_diff,0.11059400935831806
+passing_tds_ewma_diff,0.10951196873921401
+turnover_margin_ewma_diff,0.10729581770576302
+rushing_yards_ewma_diff,0.09040460335567085
+turnovers_offense_ewma_diff,0.08945703494811884
+sacks_suffered_ewma_diff,0.07858233025593511
+turnovers_defense_ewma_diff,0.06501659357411184
+passing_yards_ewma_diff,0.04315349184338069
+def_tackles_for_loss_ewma_diff,0.03537290932180911
+fg_pct_ewma_diff,0.034825395859300466
+completions_ewma_diff,0.02883267656085889
+penalty_yards_ewma_diff,0.026159871607662807
+pat_pct_ewma_diff,0.018488691673217896
