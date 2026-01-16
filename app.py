@@ -65,51 +65,101 @@ with st.sidebar:
         "Tennessee Titans",
         "Washington Commanders"
     ]
-    favorites = st.multiselect(label = "NFL Teams", options=teams, placeholder='Select favorite team',)
     show_favorites = st.checkbox("Highlight favorites", value=False)
+    favorites = st.multiselect(label = "NFL Teams", options=teams, placeholder='Select favorite team',)
 
-predictions_df = pd.read_csv('data/latest_predictions.csv')
+@st.cache_data
+def load_team_stats():
+    """Load processed team statistics."""
+    return pd.read_csv('data/latest_predictions.csv')
+
+#df = st.dataframe(predictions_df)
+
+predictions_df = load_team_stats()
 df = st.dataframe(predictions_df)
 
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Total Games", len(predictions_df))
-with col2:
-    avg_confidence = predictions_df['confidence'].apply(lambda x: max(x, 1-x)).mean()
-    st.metric("Avg Confidence", f"{avg_confidence:.1%}")
-with col3:
-    favorites = (predictions_df['confidence'] > 0.5).sum()
-    st.metric("Home Favorites", favorites)
 
-st.subheader("Win Probability by Game")
+if favorites in predictions_df['home_team'].tolist() or favorites in predictions_df['away_team'].tolist():
 
-# Create the chart
-fig = go.Figure()
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Games", len(favorites))
+    with col2:
+        avg_confidence = predictions_df['confidence'].apply(lambda x: max(x, 1-x)).mean()
+        st.metric("Avg Confidence", f"{avg_confidence:.1%}")
+    with col3:
+        favorites = (predictions_df['confidence'] > 0.5).sum()
+        st.metric("Home Favorites", favorites)
 
-# Add bars
-colors = ['#d32f2f' if p < 0.5 else '#388e3c' for p in predictions_df['home_win_prob']]
+    st.subheader("Win Probability by Game")
 
-fig.add_trace(go.Bar(
-    x=predictions_df['home_win_prob'],
-    y=predictions_df['matchup'],
-    orientation='h',
-    marker=dict(color=colors),
-    text=predictions_df['home_win_prob'].apply(lambda x: f"{x:.1%}"),
-    textposition='auto',
-))
+    # Create the chart
+    fig = go.Figure()
 
-    # Add vertical line at 50%
-fig.add_vline(x=0.5, line_dash="dash", line_color="gray", opacity=0.5)
+    # Add bars
+    colors = ['#d32f2f' if p < 0.5 else '#388e3c' for p in predictions_df['home_win_prob']]
 
-fig.update_layout(
-    title="Home Team Win Probability",
-    xaxis_title="Win Probability",
-    yaxis_title="Matchup",
-    height=max(400, len(predictions_df) * 40),
-    showlegend=False,
-    xaxis=dict(tickformat=".0%", range=[0, 1])
-)
+    fig.add_trace(go.Bar(
+        x=predictions_df['home_win_prob'],
+        y=predictions_df['matchup'],
+        orientation='h',
+        marker=dict(color=colors),
+        text=predictions_df['home_win_prob'].apply(lambda x: f"{x:.1%}"),
+        textposition='auto',
+    ))
+
+        # Add vertical line at 50%
+    fig.add_vline(x=0.5, line_dash="dash", line_color="gray", opacity=0.5)
+
+    fig.update_layout(
+        title="Home Team Win Probability",
+        xaxis_title="Win Probability",
+        yaxis_title="Matchup",
+        height=max(400, len(predictions_df) * 40),
+        showlegend=False,
+        xaxis=dict(tickformat=".0%", range=[0, 1])
+    )
+
+else:
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Games", len(predictions_df))
+    with col2:
+        avg_confidence = predictions_df['confidence'].apply(lambda x: max(x, 1-x)).mean()
+        st.metric("Avg Confidence", f"{avg_confidence:.1%}")
+    with col3:
+        favorites = (predictions_df['confidence'] > 0.5).sum()
+        st.metric("Home Favorites", favorites)
+
+    st.subheader("Win Probability by Game")
+
+    # Create the chart
+    fig = go.Figure()
+
+    # Add bars
+    colors = ['#d32f2f' if p < 0.5 else '#388e3c' for p in predictions_df['home_win_prob']]
+
+    fig.add_trace(go.Bar(
+        x=predictions_df['home_win_prob'],
+        y=predictions_df['matchup'],
+        orientation='h',
+        marker=dict(color=colors),
+        text=predictions_df['home_win_prob'].apply(lambda x: f"{x:.1%}"),
+        textposition='auto',
+    ))
+
+        # Add vertical line at 50%
+    fig.add_vline(x=0.5, line_dash="dash", line_color="gray", opacity=0.5)
+
+    fig.update_layout(
+        title="Home Team Win Probability",
+        xaxis_title="Win Probability",
+        yaxis_title="Matchup",
+        height=max(400, len(predictions_df) * 40),
+        showlegend=False,
+        xaxis=dict(tickformat=".0%", range=[0, 1])
+    )
 
 st.plotly_chart(fig, width='stretch')
 
