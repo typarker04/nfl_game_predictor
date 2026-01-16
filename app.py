@@ -7,9 +7,9 @@ import sys
 from pathlib import Path
 import nflreadpy as nfl
 
-sys.path.append(str(Path(__file__).parent / 'src'))
+#sys.path.append(str(Path(__file__).parent / 'src'))
 
-from nfl_predictor import get_nfl_diffs
+#from nfl_predictor import probability_to_odds
 
 current_week = nfl.get_current_week()
 st.set_page_config(
@@ -31,21 +31,55 @@ with st.sidebar:
     # Optional filters
     st.markdown("---")
     st.header("Filters")
-    show_favorites = st.checkbox("Highlight favorites", value=True)
+    teams = [
+        "Arizona Cardinals",
+        "Atlanta Falcons",
+        "Baltimore Ravens",
+        "Buffalo Bills",
+        "Carolina Panthers",
+        "Chicago Bears",
+        "Cincinnati Bengals",
+        "Cleveland Browns",
+        "Dallas Cowboys",
+        "Denver Broncos",
+        "Detroit Lions",
+        "Green Bay Packers",
+        "Houston Texans",
+        "Indianapolis Colts",
+        "Jacksonville Jaguars",
+        "Kansas City Chiefs",
+        "Las Vegas Raiders",
+        "Los Angeles Chargers",
+        "Los Angeles Rams",
+        "Miami Dolphins",
+        "Minnesota Vikings",
+        "New England Patriots",
+        "New Orleans Saints",
+        "New York Giants",
+        "New York Jets",
+        "Philadelphia Eagles",
+        "Pittsburgh Steelers",
+        "San Francisco 49ers",
+        "Seattle Seahawks",
+        "Tampa Bay Buccaneers",
+        "Tennessee Titans",
+        "Washington Commanders"
+    ]
+    favorites = st.multiselect(label = "NFL Teams", options=teams, placeholder='Select favorite team',)
+    show_favorites = st.checkbox("Highlight favorites", value=False)
 
-predictions_df = get_nfl_diffs()
+predictions_df = pd.read_csv('data/latest_predictions.csv')
 df = st.dataframe(predictions_df)
-#with df:
 
 
 col1, col2, col3 = st.columns(3)
 with col1:
     st.metric("Total Games", len(predictions_df))
 with col2:
-    avg_confidence = predictions_df['win_prob'].apply(lambda x: max(x, 1-x)).mean()
+    avg_confidence = predictions_df['confidence'].apply(lambda x: max(x, 1-x)).mean()
     st.metric("Avg Confidence", f"{avg_confidence:.1%}")
 with col3:
-    favorites = (predictions_df['win_prob'] > 0.5).sum()
+    favorites = (predictions_df['confidence'] > 0.5).sum()
     st.metric("Home Favorites", favorites)
 
 st.subheader("Win Probability by Game")
@@ -54,14 +88,14 @@ st.subheader("Win Probability by Game")
 fig = go.Figure()
 
 # Add bars
-colors = ['#d32f2f' if p < 0.5 else '#388e3c' for p in predictions_df['win_prob']]
+colors = ['#d32f2f' if p < 0.5 else '#388e3c' for p in predictions_df['home_win_prob']]
 
 fig.add_trace(go.Bar(
-    x=predictions_df['win_prob'],
-    y=predictions_df['game_id'],
+    x=predictions_df['home_win_prob'],
+    y=predictions_df['matchup'],
     orientation='h',
     marker=dict(color=colors),
-    text=predictions_df['win_prob'].apply(lambda x: f"{x:.1%}"),
+    text=predictions_df['home_win_prob'].apply(lambda x: f"{x:.1%}"),
     textposition='auto',
 ))
 
