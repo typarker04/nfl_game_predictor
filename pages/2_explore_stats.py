@@ -7,8 +7,14 @@ from pathlib import Path
 # Page configuration
 st.set_page_config(
     page_title="Team Stats Explorer",
-    page_icon="📊",
-    layout="wide"
+    page_icon=":material/analytics:",
+    layout="wide",
+    initial_sidebar_state='expanded',
+    menu_items={
+        "Get Help": "https://github.com/typarker04/nfl_game_predictor",
+        "Report a bug": "mailto:trparker@wisc.edu",
+        "About": "NFL Game Predictor - Built with Streamlit and scikit-learn"
+    }
 )
 
 # Load data

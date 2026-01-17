@@ -14,8 +14,11 @@ import nflreadpy as nfl
 current_week = nfl.get_current_week()
 st.set_page_config(
     page_title="NFL Game Predictions",
-    page_icon="🏈",
-    layout="wide"
+    layout="wide",
+    page_icon=":material/home:"
+    # menu_items={
+    #     ''
+    # }
 )
 
 st.title(f"Week {current_week} NFL Game Predictions")
